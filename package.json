@@ -3,7 +3,7 @@
 	"version": "1.0.0",
 	"description": "Opus UI Language Server",
 	"author": "Intenda",
-	"license": "AGPLv3",
+	"license": "MIT",
 	"engines": {
 		"node": "*"
 	},
