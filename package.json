@@ -1,0 +1,28 @@
+{
+	"name": "opus-ui-language-server",
+	"version": "1.0.0",
+	"description": "Opus UI Language Server",
+	"author": "Intenda",
+	"license": "AGPLv3",
+	"engines": {
+		"node": "*"
+	},
+	"dependencies": {
+		"fuzzy-matching": "^0.4.3",
+		"json-language-server": "^0.0.1-security",
+		"vscode-json-languageservice": "^5.3.2",
+		"vscode-languageserver": "^9.0.1",
+		"vscode-languageserver-textdocument": "^1.0.11"
+	},
+	"devDependencies": {
+		"@types/node": "^18.14.6",
+		"@typescript-eslint/eslint-plugin": "^6.14.0",
+		"@typescript-eslint/parser": "^6.14.0",
+		"eslint": "^8.56.0",
+		"typescript": "^5.3.3"
+	},
+	"scripts": {
+		"compile": "tsc",
+		"dev": "tsc -w"
+	}
+}
