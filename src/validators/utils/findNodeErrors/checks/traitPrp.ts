@@ -10,7 +10,7 @@ import { getTraitDataFromTraitValue } from '../../../../utils/nodeValueRetrieval
 import { getValueTypeAsString } from '../../../../utils/utils';
 
 // Model
-import type { Nodes, Node, NodeError, TraitDefinitionAcceptPrpsData, AcceptPrpConfig, JSONValue, JSONObject, TraitPath } from '../../../../model';
+import type { Nodes, Node, NodeError, TraitDefinitionAcceptPrpsData, AcceptPrpConfig, JSONValue, JSONObject } from '../../../../model';
 
 // Config
 import { NODE_TYPES } from '../../../../utils/buildNodes/setNodeTypes/config';

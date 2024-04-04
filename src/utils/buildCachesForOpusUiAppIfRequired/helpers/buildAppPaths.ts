@@ -1,6 +1,9 @@
 // Helpers
 import path from 'path';
 
+// Config
+import { opusUiEngineDependencyFolderPath, opusUiEngineDependencyName } from '../../../config';
+
 // Internals
 import { SERVER_INIT_PARAMS } from '../../../managers/serverManager/events/onInitialize';
 
@@ -95,7 +98,14 @@ const buildOpusLibraryPaths = (opusAppPath: string, opusAppPackageValue: JSONObj
 
 	if (opusAppPackageValue.opusUiComponentLibraries && isArray(opusAppPackageValue.opusUiComponentLibraries)) {
 		(opusAppPackageValue.opusUiComponentLibraries as JSONArray).forEach(k => {
-			if (!k || typeof k !== 'string' || k === 'opus-ui' || !opusAppPackageValue.dependencies || !isObjectLiteral(opusAppPackageValue.dependencies) || !(opusAppPackageValue.dependencies as JSONObject)[k])
+			if (
+				!k ||
+				typeof k !== 'string' ||
+				k === path.join(opusUiEngineDependencyFolderPath, opusUiEngineDependencyName) ||
+				!opusAppPackageValue.dependencies ||
+				!isObjectLiteral(opusAppPackageValue.dependencies) ||
+				!(opusAppPackageValue.dependencies as JSONObject)[k]
+			)
 				return;
 
 			const opusLibraryPath = path.join(opusAppPath, 'node_modules', k);
@@ -158,7 +168,7 @@ const buildAppPaths = async (opusAppPackagePath: string, opusAppPackageValue: JS
 
 	const workspacePath = getAbsolutePathFromUri(SERVER_INIT_PARAMS.rootUri!);
 	const opusAppPath = getFixedPathForOS(opusAppPackagePath.substring(0, opusAppPackagePath.lastIndexOf('/')));
-	const opusPath = path.join(opusAppPath, 'node_modules', 'opus-ui');
+	const opusPath = path.join(opusAppPath, 'node_modules', opusUiEngineDependencyFolderPath, opusUiEngineDependencyName);
 	const opusAppMdaPath = path.join(opusAppPath, ...appDir.split('/'));
 	const opusLibraryPaths = buildOpusLibraryPaths(opusAppPath, opusAppPackageValue);
 	const opusEnsemblePaths: OpusEnsemblePaths = buildOpusEnsemblePaths(opusAppPath, opusAppPackageValue);

@@ -5,6 +5,9 @@ import { isObjectLiteral } from '../utils';
 import fetchFile from '../fetchFile';
 import path from 'path';
 
+// Config
+import { opusUiEngineDependencyFolderPath, opusUiEngineDependencyName } from '../../config';
+
 // Model
 import type { JSONObject } from '../../model';
 
@@ -52,7 +55,7 @@ export const parseOpusAppPackageJsonFile = (packagePath: string, packageFileStri
 			!isObjectLiteral(packageJsonValue) ||
 			!packageJsonValue.dependencies ||
 			!isObjectLiteral(packageJsonValue.dependencies) ||
-			!(packageJsonValue.dependencies as JSONObject)['opus-ui']
+			!(packageJsonValue.dependencies as JSONObject)[path.join(opusUiEngineDependencyFolderPath, opusUiEngineDependencyName)]
 		)
 			return null;
 

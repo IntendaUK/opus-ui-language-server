@@ -64,7 +64,7 @@ export const matchTraitDefinitionEnsemblePathToEnsemblePath = (opusEnsemblePaths
 
 	const matchedEnsemblesPathEntry = Array
 		.from(opusEnsemblePaths.entries())
-		.find(([name]) => name === ensembleName);
+		.find(([name]) => !!name.split('/').find(n => n === ensembleName));
 
 	if (!matchedEnsemblesPathEntry) {
 		return {
