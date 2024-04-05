@@ -47,7 +47,7 @@ const trait = (nodes: Nodes, node: Node, errors: NodeError[]) => {
 		const traitDefinitionPath = getTraitDefinitionPathFromTraitDefinitionPathDelta(trait, node.filePath!);
 
 		const message = traitDefinitionPath.includes(ENSEMBLE_FOLDER_NOT_SET)
-			? `Ensemble "${trait.slice(1, trait.indexOf('/'))}" could not be determined. Ensure it is added to both opusUiEnsembles and the dependencies object inside package.json, and is installed using "npm install"`
+			? `An ensemble could not be found for "${trait}". Ensure this path is spelt correctly, the associated ensemble name is added to dependencies inside package.json (and is installed using "npm install") and the path is supplied in the opusUiEnsembles list.`
 			: `No trait exists under path: ${traitDefinitionPath}`;
 
 		errors.push({

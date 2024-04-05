@@ -7,7 +7,7 @@ import { NODE_TYPES } from '../../../../utils/buildNodes/setNodeTypes/config';
 
 // Utils
 import { nodeHasType } from '../../../../utils/buildNodes/setNodeTypes/utils';
-import { matchTraitDefinitionEnsemblePathToEnsemblePath } from '../../../../utils/pathUtils';
+import { getTraitDefinitionPathFromTraitDefinitionPathDelta } from '../../../../utils/pathUtils';
 
 // Model
 import type { Nodes, Node, NodeError } from '../../../../model';
@@ -41,24 +41,24 @@ const startup = (nodes: Nodes, node: Node, errors: NodeError[]) => {
 		const match = fm.get(startupEntryKey);
 
 		if (match.distance === 1) {
-
 			if (startupEntryKey === 'startup' && startupEntryNode.valueType === 'string') {
 				const startupEntryValue = (startupEntryNode.value as string);
 
-				if (startupEntryValue.charAt(0) === '@') {
-					const { matched, ensembleName } = matchTraitDefinitionEnsemblePathToEnsemblePath(ServerManager.paths.opusEnsemblePaths, startupEntryValue);
+				const nodePath = getTraitDefinitionPathFromTraitDefinitionPathDelta(startupEntryValue, startupEntryNode.filePath!);
 
-					if (!matched) {
-						errors.push({
-							errorType,
-							message: `Ensemble "${ensembleName}" could not be determined. Ensure it is added to both opusUiEnsembles and the dependencies object inside package.json, and is installed using "npm install"`,
-							erroredIn: 'VALUE',
-							errorSolution: match.value,
-							severity: 1,
-							node: startupEntryNode
-						});
-					}
+				if (!ServerManager.caches.nodes.has(nodePath)) {
+					const message = startupEntryValue.charAt(0) === '@'
+						? `An ensemble could not be found for "${startupEntryValue}". Ensure this path is spelt correctly, the associated ensemble name is added to dependencies inside package.json (and is installed using "npm install") and the path is supplied in the opusUiEnsembles list.`
+						: 'Could not match a file with that path. Check that the file is a descendent of the "dashboard" folder.';
 
+					errors.push({
+						errorType,
+						message,
+						erroredIn: 'VALUE',
+						errorSolution: match.value,
+						severity: 1,
+						node: startupEntryNode
+					});
 				}
 			}
 

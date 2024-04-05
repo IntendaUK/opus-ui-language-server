@@ -43,7 +43,6 @@ const switchToOpusUiAppAndReloadCachesIfRequired = async (fileUri: string) => {
 			ServerManager.paths = previouslyCachedOpusUiAppData!.languageServerPaths;
 			ServerManager.caches = previouslyCachedOpusUiAppData!.caches;
 		} else {
-
 			console.log(`\n\n*******\nBUILDING CACHES FOR APP: ${newLanguageServerPaths.opusAppPath}\n*******\n\n`);
 
 			ServerManager.paths = newLanguageServerPaths;

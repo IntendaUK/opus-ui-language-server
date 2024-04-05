@@ -118,6 +118,29 @@ const buildOpusLibraryPaths = (opusAppPath: string, opusAppPackageValue: JSONObj
 	return opusLibraryPaths;
 };
 
+const buildInternalEnsembleConfig = (internalPathVar: string, opusAppPath: string, opusAppPackageValue: JSONObject): null | { ensembleName: string, ensemblePath: string } => {
+	if (!opusAppPackageValue.dependencies || !isObjectLiteral(opusAppPackageValue.dependencies) || !(opusAppPackageValue.dependencies as JSONObject)[internalPathVar])
+		return null;
+
+	const ensemblePath = path.join(opusAppPath, 'node_modules', internalPathVar);
+	const ensembleName = internalPathVar;
+
+	return {
+		ensembleName,
+		ensemblePath
+	};
+};
+
+const buildExternalEnsembleConfig = (externalPathVar: string): { ensembleName: string, ensemblePath: string } => {
+	const ensemblePath = getFixedPathForOS(externalPathVar);
+	const ensembleName = ensemblePath.substring(ensemblePath.lastIndexOf('/') + 1);
+
+	return {
+		ensembleName,
+		ensemblePath
+	};
+};
+
 const buildOpusEnsemblePaths = (opusAppPath: string, opusAppPackageValue: JSONObject): OpusEnsemblePaths => {
 	const opusEnsemblePaths: OpusEnsemblePaths = new Map();
 
@@ -130,21 +153,32 @@ const buildOpusEnsemblePaths = (opusAppPath: string, opusAppPackageValue: JSONOb
 			let ensembleName;
 
 			if (typeof v === 'string') {
-				if (!opusAppPackageValue.dependencies || !isObjectLiteral(opusAppPackageValue.dependencies) || !(opusAppPackageValue.dependencies as JSONObject)[v])
+				const res = buildInternalEnsembleConfig(v, opusAppPath, opusAppPackageValue);
+				if (!res)
 					return;
 
-				ensembleName = v;
-				ensemblePath = path.join(opusAppPath, 'node_modules', v);
+				ensemblePath = res.ensemblePath;
+				ensembleName = res.ensembleName;
 			} else {
-				// If we get here, we have an external ensemble
-				ensemblePath = (v as JSONObject).path;
+				const ensembleData = (v as JSONObject);
 
-				if (!ensemblePath || typeof ensemblePath !== 'string')
+				const pathVar = (v as JSONObject).path;
+				if (!pathVar || typeof pathVar !== 'string')
 					return;
 
-				ensemblePath = getFixedPathForOS(ensemblePath);
+				if (ensembleData.external === true) {
+					const res = buildExternalEnsembleConfig(pathVar);
+					ensemblePath = res.ensemblePath;
+					ensembleName = res.ensembleName;
+				} else {
+					const res = buildInternalEnsembleConfig(pathVar, opusAppPath, opusAppPackageValue);
+					if (!res)
+						return;
 
-				ensembleName = ensemblePath.substring(ensemblePath.lastIndexOf('/') + 1);
+					ensemblePath = res.ensemblePath;
+					ensembleName = res.ensembleName;
+				}
+
 			}
 
 			if (checkIfFolderExists(ensemblePath))

@@ -9,18 +9,22 @@ import type { Node, Nodes } from '../../../../../../../model';
 import ServerManager from '../../../../../index';
 
 // Implementation
-const buildActionTypeSuggestions = (node: Node, nodes: Nodes): CompletionItem[] => Array.from(ServerManager.caches.opusActionsMap.values()).map(e => {
-	const completionItem: CompletionItem = buildCompletionItem(
-		node,
-		'VALUE',
-		e.key,
-		e.type,
-		null,
-		e.type,
-		e.desc,
-		nodes);
+const buildActionTypeSuggestions = (node: Node, nodes: Nodes): CompletionItem[] => {
+	const opusActionsMap = ServerManager.caches.opusActionsMap;
 
-	return completionItem;
-});
+	return Array.from(opusActionsMap.values()).map(e => {
+		const completionItem: CompletionItem = buildCompletionItem(
+			node,
+			'VALUE',
+			e.key,
+			e.type,
+			null,
+			e.type,
+			e.desc,
+			nodes);
+
+		return completionItem;
+	});
+};
 
 export default buildActionTypeSuggestions;
