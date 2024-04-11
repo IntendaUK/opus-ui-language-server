@@ -4,7 +4,7 @@ import type { FileLineMapping } from '../../../model';
 // Internal Utils
 const buildLinePathDelta = (fileLineMapping: FileLineMapping, arrayIndexes: number[]): null | string => {
 	const { lineStringKey, lineStringFlags, lineIndex } = fileLineMapping;
-	const { keyIsFalsy, valueIsObjectOpen, valueIsObjectClose, valueIsArrayOpen, valueIsArrayClose, lineIsArrayEntry, keyIsEmptyString, valueIsFileStart, valueIsFalsy } = lineStringFlags;
+	const { keyIsFalsy, valueIsObjectOpen, valueIsObjectClose, valueIsArrayOpen, valueIsArrayClose, lineIsArrayEntry, keyIsEmptyString, valueIsFileStart } = lineStringFlags;
 
 	if (valueIsFileStart)
 		return null;

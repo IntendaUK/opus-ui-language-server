@@ -15,9 +15,11 @@ const buildCompletionItems = (node: Node, nodes: Nodes) => {
 	const scopeIdRelIdMatchesForAllNodes = getAllComponentNodesWithIdScopeOrRelIdMatches(nodes);
 
 	scopeIdRelIdMatchesForAllNodes.map(({ node: n, matches }) => {
+		const relativePath = getRelativePathFromAbsoluteFilePath(n.filePath!);
+
 		const componentNodeTypes = findNodeComponentType(nodes, n);
 		const componentTypeString = !componentNodeTypes.length ? 'NO TYPE' : componentNodeTypes.length > 1 ? `MULTIPLE TYPES: [${componentNodeTypes.join(', ')}]` : componentNodeTypes[0];
-		const componentDocumentation = `### Full path\n\`${n.filePath}\`\n### Relative path\n\`${getRelativePathFromAbsoluteFilePath(n.filePath!)}\`\n### Component value\n\`\`\`json\n${JSON.stringify(n.value, null, 2)}\n\`\`\``;
+		const componentDocumentation = `### Full path\n\`${n.filePath}\`\n### Relative path\n\`${relativePath}\`\n### Component value\n\`\`\`json\n${JSON.stringify(n.value, null, 2)}\n\`\`\``;
 
 		matches.forEach(m => {
 			if (m.matchedOn === 'relId') {
@@ -26,8 +28,8 @@ const buildCompletionItems = (node: Node, nodes: Nodes) => {
 						node,
 						'VALUE',
 						scopeAndRelId,
+						relativePath,
 						componentTypeString,
-						getRelativePathFromAbsoluteFilePath(n.filePath!),
 						'string',
 						componentDocumentation,
 						nodes
@@ -38,8 +40,8 @@ const buildCompletionItems = (node: Node, nodes: Nodes) => {
 					node,
 					'VALUE',
 					m.matchedOn === 'scope' ? `||${m.matchedValue}||` : m.matchedValue,
+					relativePath,
 					componentTypeString,
-					getRelativePathFromAbsoluteFilePath(n.filePath!),
 					'string',
 					componentDocumentation,
 					nodes

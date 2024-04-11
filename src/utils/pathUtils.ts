@@ -30,10 +30,12 @@ export const getRelativePathFromAbsoluteFilePath = (absoluteFilePath: string): n
 	if (absoluteFilePath.includes(ServerManager.paths.opusAppMdaPath))
 		return absoluteFilePath.replace(`${ServerManager.paths.opusAppMdaPath}/`, '');
 
-	const matchedEnsemblePath = Array.from(ServerManager.paths.opusEnsemblePaths.values()).find(p => absoluteFilePath.startsWith(p));
+	const matchedEnsemblePath = Array.from(ServerManager.paths.opusEnsemblePaths.entries()).find(([, p]) => absoluteFilePath.startsWith(p));
 
-	if (matchedEnsemblePath)
-		absoluteFilePath.replace(`${getParentPathFromPath(matchedEnsemblePath)}/`, '');
+	if (matchedEnsemblePath) {
+		const [ensembleName] = matchedEnsemblePath;
+		return absoluteFilePath.substring(absoluteFilePath.indexOf(ensembleName));
+	}
 
 	return null;
 };
@@ -60,21 +62,17 @@ export const getObjectByPath = (object: AnyObject, objectPath: string): AnyObjec
 export const ENSEMBLE_FOLDER_NOT_SET = '{ENSEMBLE_FOLDER_NOT_SET}';
 
 export const matchTraitDefinitionEnsemblePathToEnsemblePath = (opusEnsemblePaths: OpusEnsemblePaths, traitDefinitionEnsemblePath: string): { matched: boolean, ensembleName: string, ensemblePath: string } => {
-	const ensembleName = traitDefinitionEnsemblePath.slice(1, traitDefinitionEnsemblePath.indexOf('/'));
+	const matchedEnsembleData = Array.from(opusEnsemblePaths.entries()).find(([n]) => traitDefinitionEnsemblePath.slice(1).includes(n));
 
-	const matchedEnsemblesPathEntry = Array
-		.from(opusEnsemblePaths.entries())
-		.find(([name]) => name === ensembleName);
-
-	if (!matchedEnsemblesPathEntry) {
+	if (!matchedEnsembleData) {
 		return {
 			matched: false,
-			ensembleName,
+			ensembleName: 'UNKNOWN',
 			ensemblePath: ENSEMBLE_FOLDER_NOT_SET
 		};
 	}
 
-	const [, ensemblePath] = matchedEnsemblesPathEntry;
+	const [ensembleName, ensemblePath] = matchedEnsembleData;
 
 	return {
 		matched: true,

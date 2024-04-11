@@ -12,6 +12,8 @@ import { PLACEHOLDER_KEY, PLACEHOLDER_VALUE } from './buildDummyNodes';
 type CompletionItemType = 'KEY' | 'VALUE'
 
 // Internal Utils
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const buildInsertText = (node: Node, type: CompletionItemType, suggestion: string, labelType: string, nodes: Nodes): string => {
 	const { lineString, lineStringKey, lineStringValue, lineStringFlags: { lineIsObjectEntry, valueIsEmptyString } } = node.fileLineMapping!;
 
