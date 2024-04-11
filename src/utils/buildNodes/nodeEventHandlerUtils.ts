@@ -22,16 +22,25 @@ import type { JSONObject, Node, Nodes } from '../../model';
 import ServerManager from '../../managers/serverManager';
 
 // Config
+import { SERVER_INIT_PARAMS } from '../../managers/serverManager/events/onInitialize';
 import { NODE_TYPES } from './setNodeTypes/config';
 
 // Local Helpers
 const buildAndSendJsonDiagnostics = async (fileUri: string, fileContentString: string): Promise<Diagnostic[]> => {
 	const jsonDiagnostics = await getJsonDiagnostics(fileUri, fileContentString);
 
-	await ServerManager.connection.sendDiagnostics({
-		uri: fileUri,
-		diagnostics: jsonDiagnostics
-	});
+	// VSCode already shows Json diagnostics in the "Json Language Features" built in extension, so we
+	// don't show diagnostics here to avoid duplication.
+	const showJsonDiagnostics = (
+		SERVER_INIT_PARAMS.clientInfo?.name !== 'Visual Studio Code'
+	);
+
+	if (showJsonDiagnostics) {
+		await ServerManager.connection.sendDiagnostics({
+			uri: fileUri,
+			diagnostics: jsonDiagnostics
+		});
+	}
 
 	return jsonDiagnostics;
 };
