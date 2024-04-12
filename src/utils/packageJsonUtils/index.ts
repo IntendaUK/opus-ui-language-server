@@ -2,6 +2,7 @@
 import { existsSync } from 'fs';
 import { getAbsolutePathFromUri, getParentPathFromPath } from '../pathUtils';
 import { isObjectLiteral } from '../utils';
+import getFixedPathForOS from '../getFixedPathForOS';
 import fetchFile from '../fetchFile';
 import path from 'path';
 
@@ -34,8 +35,12 @@ const drillUpToPackageJsonFileOnDisk = async (directory: string): Promise<{ pack
 		if (existsSync(packageFilePath)) {
 			const packageFileString = await fetchFile(packageFilePath);
 
-			if (packageFileString)
-				return { packageFilePath, packageFileString };
+			if (packageFileString) {
+				return {
+					packageFilePath: getFixedPathForOS(packageFilePath),
+					packageFileString
+				};
+			}
 		}
 
 		currentDirectory = path.dirname(currentDirectory);
@@ -51,11 +56,13 @@ export const parseOpusAppPackageJsonFile = (packagePath: string, packageFileStri
 
 		const packageJsonValue = JSON.parse(packageFileString);
 
+		const opusUiPackageName = `${opusUiEngineDependencyFolderPath}/${opusUiEngineDependencyName}`;
+
 		if (
 			!isObjectLiteral(packageJsonValue) ||
 			!packageJsonValue.dependencies ||
 			!isObjectLiteral(packageJsonValue.dependencies) ||
-			!(packageJsonValue.dependencies as JSONObject)[path.join(opusUiEngineDependencyFolderPath, opusUiEngineDependencyName)]
+			!(packageJsonValue.dependencies as JSONObject)[opusUiPackageName]
 		)
 			return null;
 
@@ -71,7 +78,7 @@ export const getPackageJsonDataForOpusUiApp = async (fileUri: string): Promise<n
 	const currentFilePath = getAbsolutePathFromUri(fileUri);
 
 	const packageJsonData = await drillUpToPackageJsonFileOnDisk(currentFilePath.substring(0, currentFilePath.lastIndexOf('/')));
-	if (!packageJsonData) 
+	if (!packageJsonData)
 		return null;
 
 	const { packageFilePath, packageFileString: packageFileStringOnDisk } = packageJsonData;

@@ -50,7 +50,7 @@ const buildPropSpecPathsForPath = async (p: string): Promise<null | OpusComponen
 
 			propSpecPaths[(name as string)] = {
 				libraryPath: p,
-				componentPath: path.join(p, relativePath as string)
+				componentPath: getFixedPathForOS(path.join(p, relativePath as string))
 			};
 		});
 
@@ -101,14 +101,14 @@ const buildOpusLibraryPaths = (opusAppPath: string, opusAppPackageValue: JSONObj
 			if (
 				!k ||
 				typeof k !== 'string' ||
-				k === path.join(opusUiEngineDependencyFolderPath, opusUiEngineDependencyName) ||
+				k === getFixedPathForOS(path.join(opusUiEngineDependencyFolderPath, opusUiEngineDependencyName)) ||
 				!opusAppPackageValue.dependencies ||
 				!isObjectLiteral(opusAppPackageValue.dependencies) ||
 				!(opusAppPackageValue.dependencies as JSONObject)[k]
 			)
 				return;
 
-			const opusLibraryPath = path.join(opusAppPath, 'node_modules', k);
+			const opusLibraryPath = getFixedPathForOS(path.join(opusAppPath, 'node_modules', k));
 
 			if (checkIfFolderExists(opusLibraryPath))
 				opusLibraryPaths.set(k, opusLibraryPath);
@@ -122,7 +122,7 @@ const buildInternalEnsembleConfig = (internalPathVar: string, opusAppPath: strin
 	if (!opusAppPackageValue.dependencies || !isObjectLiteral(opusAppPackageValue.dependencies) || !(opusAppPackageValue.dependencies as JSONObject)[internalPathVar])
 		return null;
 
-	const ensemblePath = path.join(opusAppPath, 'node_modules', internalPathVar);
+	const ensemblePath = getFixedPathForOS(path.join(opusAppPath, 'node_modules', internalPathVar));
 	const ensembleName = internalPathVar;
 
 	return {
@@ -202,8 +202,8 @@ const buildAppPaths = async (opusAppPackagePath: string, opusAppPackageValue: JS
 
 	const workspacePath = getAbsolutePathFromUri(SERVER_INIT_PARAMS.rootUri!);
 	const opusAppPath = getFixedPathForOS(opusAppPackagePath.substring(0, opusAppPackagePath.lastIndexOf('/')));
-	const opusPath = path.join(opusAppPath, 'node_modules', opusUiEngineDependencyFolderPath, opusUiEngineDependencyName);
-	const opusAppMdaPath = path.join(opusAppPath, ...appDir.split('/'));
+	const opusPath = getFixedPathForOS(path.join(opusAppPath, 'node_modules', opusUiEngineDependencyFolderPath, opusUiEngineDependencyName));
+	const opusAppMdaPath = getFixedPathForOS(path.join(opusAppPath, ...appDir.split('/')));
 	const opusLibraryPaths = buildOpusLibraryPaths(opusAppPath, opusAppPackageValue);
 	const opusEnsemblePaths: OpusEnsemblePaths = buildOpusEnsemblePaths(opusAppPath, opusAppPackageValue);
 

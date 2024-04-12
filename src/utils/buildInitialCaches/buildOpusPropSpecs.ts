@@ -11,6 +11,7 @@ import type { ComponentPropSpecsConfig, ComponentPropSpecs, PropSpec } from '../
 
 // Utils
 import fetchFile from '../fetchFile';
+import getFixedPathForOS from '../getFixedPathForOS';
 
 // Internal Utils
 const fetchPropSpecsConfig = async (componentType: string): Promise<null | ComponentPropSpecsConfig> => {
@@ -18,7 +19,7 @@ const fetchPropSpecsConfig = async (componentType: string): Promise<null | Compo
 	if (!componentPropSpecPaths)
 		return null;
 
-	const componentConfigPath = path.join(componentPropSpecPaths.componentPath, 'system.json');
+	const componentConfigPath = getFixedPathForOS(path.join(componentPropSpecPaths.componentPath, 'system.json'));
 
 	const componentConfigString = await fetchFile(componentConfigPath);
 
