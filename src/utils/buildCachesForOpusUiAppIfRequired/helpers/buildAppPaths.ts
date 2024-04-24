@@ -2,7 +2,7 @@
 import path from 'path';
 
 // Config
-import { opusUiEngineDependencyFolderPath, opusUiEngineDependencyName } from '../../../config';
+import { opusUiEngineDependencyFolderPath, opusUiEngineDependencyName, opusUiLspConfigFileName } from '../../../config';
 
 // Internals
 import { SERVER_INIT_PARAMS } from '../../../managers/serverManager/events/onInitialize';
@@ -30,7 +30,7 @@ const buildPropSpecPathsForPath = async (p: string): Promise<null | OpusComponen
 	try {
 		const propSpecPaths: OpusComponentPropSpecPaths = {};
 
-		const lspConfigString = await fetchFile(path.join(p, 'lspconfig.json'));
+		const lspConfigString = await fetchFile(path.join(p, opusUiLspConfigFileName));
 		if (!lspConfigString)
 			return null;
 
@@ -222,8 +222,8 @@ const buildAppPaths = async (opusAppPackagePath: string, opusAppPackageValue: JS
 		opusEnsemblePaths
 	};
 
-	// const { opusComponentPropSpecPaths: a, ...b } = languageServerPaths;
-	// console.log(JSON.stringify(b, null, 2));
+	const { opusComponentPropSpecPaths: a, ...b } = languageServerPaths;
+	console.log(JSON.stringify(b, null, 2));
 
 	return languageServerPaths;
 };

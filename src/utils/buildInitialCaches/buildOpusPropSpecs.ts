@@ -13,13 +13,16 @@ import type { ComponentPropSpecsConfig, ComponentPropSpecs, PropSpec } from '../
 import fetchFile from '../fetchFile';
 import getFixedPathForOS from '../getFixedPathForOS';
 
+// Internals
+import { opusUiComponentConfigFileName } from '../../config';
+
 // Internal Utils
 const fetchPropSpecsConfig = async (componentType: string): Promise<null | ComponentPropSpecsConfig> => {
 	const componentPropSpecPaths = ServerManager.paths.opusComponentPropSpecPaths[componentType];
 	if (!componentPropSpecPaths)
 		return null;
 
-	const componentConfigPath = getFixedPathForOS(path.join(componentPropSpecPaths.componentPath, 'system.json'));
+	const componentConfigPath = getFixedPathForOS(path.join(componentPropSpecPaths.componentPath, opusUiComponentConfigFileName));
 
 	const componentConfigString = await fetchFile(componentConfigPath);
 
@@ -32,11 +35,17 @@ const fetchPropSpecsConfig = async (componentType: string): Promise<null | Compo
 };
 
 const fetchComponentPropSpecs = async (componentType: string, propSpecConfig: ComponentPropSpecsConfig): Promise<null | ComponentPropSpecs> => {
-	const componentPropSpecPaths = ServerManager.paths.opusComponentPropSpecPaths[componentType];
+	const { opusComponentPropSpecPaths, opusPath } = ServerManager.paths;
+
+	const componentPropSpecPaths = opusComponentPropSpecPaths[componentType];
 	if (!componentPropSpecPaths)
 		return null;
 
-	let propSpecString: null | string = await fetchFile(path.join(componentPropSpecPaths.libraryPath, propSpecConfig.path));
+	const basePath = propSpecConfig.fileExistsInOpusUiFolder
+		? opusPath
+		: componentPropSpecPaths.libraryPath;
+
+	let propSpecString: null | string = await fetchFile(path.join(basePath, propSpecConfig.path));
 	if (!propSpecString)
 		return null;
 

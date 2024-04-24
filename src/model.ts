@@ -216,6 +216,7 @@ export type PropSpec = {
 export type ComponentPropSpecs = Map<string, PropSpec>;
 
 export type ComponentPropSpecsConfig = {
+	fileExistsInOpusUiFolder?: boolean,
 	path: string,
 	dependents: ComponentPropSpecsConfig[],
 	functions: {
