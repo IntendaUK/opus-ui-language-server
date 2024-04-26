@@ -2,8 +2,7 @@
 
 ## Overview
 
-The Opus UI Language Server is a tool designed to aid developers when writing applications that use the [Opus UI](https://github.com/IntendaUK/opus-ui) library. It enables features such as auto-completion, syntax highlighting, and error checking amongst other language server features to streamline the development process.
-
+The Opus UI Language Server is a tool designed to aid developers when building pure [Opus UI](https://github.com/IntendaUK/opus-ui) applications. It enables features such as auto-completion, syntax highlighting, and error checking amongst other language server features to streamline the development process.
 
 ## Supported Clients
 
@@ -21,7 +20,7 @@ To utilize the Opus UI Language Server, follow these steps:
 
 ## Contributing
 
-We welcome contributions from the community to enhance the functionality and compatibility of the Opus UI Language Server. If you're interested in contributing, please refer to our [contribution guidelines](CONTRIBUTING.md).
+We welcome contributions from the community to enhance the functionality and compatibility of the Opus UI Language Server. If you're interested in contributing, please refer to our [contribution guidelines](https://github.com/IntendaUK/opus-ui-language-server/blob/main/CONTRIBUTING.md).
 
 ## Logging Tickets
 
