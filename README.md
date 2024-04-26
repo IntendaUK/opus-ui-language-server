@@ -1,8 +1,12 @@
 # Opus UI Language Server
 
+#### Code IntelliSense and linter for use when building pure Opus UI applications via JSON files
+
+---
+
 ## Overview
 
-The Opus UI Language Server is a tool designed to aid developers when building pure [Opus UI](https://github.com/IntendaUK/opus-ui) applications. It enables features such as auto-completion, syntax highlighting, and error checking amongst other language server features to streamline the development process.
+The Opus UI Language Server is a tool designed to aid developers when building pure [Opus UI](https://opus-ui.com) applications. It enables features such as auto-completion, syntax highlighting, and error checking amongst other language server features to streamline the development process.
 
 ## Supported Clients
 
