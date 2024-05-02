@@ -79,7 +79,7 @@ const componentProperties = async (nodes: Nodes, node: Node, errors: NodeError[]
 
 		errors.push({
 			errorType,
-			message: `Property "${prpNode.name}" is not a valid property for "${findNodeComponentType(nodes, node)[0]}". If this is a custom property, you can safely ignore this.`,
+			message: `Property "${prpNode.name}" is not a supported property for "${findNodeComponentType(nodes, node)[0]}". If this is a custom property, you can safely ignore this.`,
 			erroredIn: 'KEY',
 			errorSolution: 'UNKNOWN',
 			severity: 3,

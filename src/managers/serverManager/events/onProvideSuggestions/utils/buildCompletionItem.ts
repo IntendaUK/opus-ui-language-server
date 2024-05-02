@@ -14,7 +14,7 @@ type CompletionItemType = 'KEY' | 'VALUE'
 // Internal Utils
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const buildInsertText = (node: Node, type: CompletionItemType, suggestion: string, labelType: string, nodes: Nodes): string => {
+const buildInsertText = (node: Node, type: CompletionItemType, insertTextValue: string, labelType: string, nodes: Nodes): string => {
 	const { lineString, lineStringKey, lineStringValue, lineStringFlags: { lineIsObjectEntry, valueIsEmptyString } } = node.fileLineMapping!;
 
 	const lineStringDelta = type === 'KEY' ? lineStringKey : lineStringValue;
@@ -27,10 +27,10 @@ const buildInsertText = (node: Node, type: CompletionItemType, suggestion: strin
 	else if (type === 'VALUE' && labelType === 'object')
 		insertText = '{\n\t$0\n}';
 	else
-		insertText = suggestion;
+		insertText = insertTextValue;
 
 	if ((type === 'KEY' || (type === 'VALUE' && !['array', 'object'].includes(labelType))) && lineStringDelta === placeholderDelta)
-		insertText = suggestion === '""' || (type === 'VALUE' && labelType === 'boolean') ? suggestion : `"${suggestion}"`;
+		insertText = insertTextValue === '""' || (type === 'VALUE' && labelType === 'boolean') ? insertTextValue : `"${insertTextValue}"`;
 
 	if (lineIsObjectEntry && !valueIsEmptyString && type === 'VALUE' && lineString[lineString.indexOf(lineStringValue) - 1] !== ' ')
 		insertText = ` ${insertText}`;
@@ -47,16 +47,19 @@ const buildCompletionItem = (
 	labelDescription: null | string,
 	labelType: string,
 	documentation: null | string,
-	nodes: Nodes
+	nodes: Nodes,
+	insertTextValue = suggestion,
+	completionItemType: CompletionItemKind = CompletionItemKind.Value
 ): CompletionItem => {
-	const insertText: undefined | string = buildInsertText(node, type, suggestion, labelType, nodes);
+
+	const insertText: undefined | string = buildInsertText(node, type, insertTextValue, labelType, nodes);
 
 	const completionItem: CompletionItem = {
 		insertText,
 		insertTextFormat: 2,
 		label: suggestion,
 		labelDetails: {},
-		kind: CompletionItemKind.Value
+		kind: completionItemType
 	};
 
 	if (documentation) {

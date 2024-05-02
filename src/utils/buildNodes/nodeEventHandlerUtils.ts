@@ -144,7 +144,7 @@ export const handlerOnFileOpened = async (fileUri: string, fileContentString: st
 export const handlerOnPackageJsonFileModified = async (fileUri: string, fileContentString: string) => {
 	const fileNodePath = getAbsolutePathFromUri(fileUri);
 	const prevPackageFile = ServerManager.caches.nodes.get(fileNodePath);
-	const modifiedNodes: ModifiedNodes = getModifiedFileNodes(ServerManager.caches.nodes, fileNodePath, fileContentString!);
+	const modifiedNodes = await buildNodesForModifiedFileAndSendDiagnostics(fileUri, fileContentString);
 	const newPackageFile = modifiedNodes.nodesBuilt.find(n => n.path === fileNodePath);
 
 	if (prevPackageFile?.value && newPackageFile?.value) {
