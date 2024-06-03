@@ -10,6 +10,7 @@ export const opusUiConfigFileName = '.opusUiConfig';
 export const opusUiConfigKeys = [
 	'opusPackagerConfig',
 	'opusUiComponentLibraries',
-	'opusUiEnsembles'
+	'opusUiEnsembles',
+	'opusUiColorThemes'
 ];
 

@@ -35,6 +35,29 @@ import getFixedPathForOS from '../../getFixedPathForOS';
 import ServerManager from '../../../managers/serverManager';
 
 // Local Helpers
+const buildExternalOpusUiConfigPath = (opusAppPath: string, opusAppPackageValue: JSONObject): string => {
+	const defaultPath = path.join(opusAppPath, opusUiConfigFileName);
+
+	if (!opusAppPackageValue.opusUiConfig || !isObjectLiteral(opusAppPackageValue.opusUiConfig))
+		return defaultPath;
+
+	const opusUiConfig = opusAppPackageValue.opusUiConfig as { externalOpusUiConfig?: JSONValue };
+
+	let externalOpusUiConfig = opusUiConfig.externalOpusUiConfig;
+
+	if (!externalOpusUiConfig || typeof externalOpusUiConfig !== 'string')
+		return defaultPath;
+
+	externalOpusUiConfig = externalOpusUiConfig as string;
+
+	if (externalOpusUiConfig.includes('\\') || externalOpusUiConfig.includes('/'))
+		externalOpusUiConfig = getFixedPathForOS(externalOpusUiConfig);
+	else
+		externalOpusUiConfig = getFixedPathForOS(path.join(opusAppPath, externalOpusUiConfig));
+
+	return externalOpusUiConfig;
+};
+
 const getOpusUiConfigFile = async (externalOpusUiConfigPath: string): Promise<JSONObject | null> => {
 	let externalOpusUiConfigData = null;
 
@@ -247,29 +270,6 @@ const buildOpusEnsemblePaths = (opusAppPath: string, opusUiEnsembles: JSONValue,
 	}
 
 	return opusEnsemblePaths;
-};
-
-const buildExternalOpusUiConfigPath = (opusAppPath: string, opusAppPackageValue: JSONObject): string => {
-	const defaultPath = path.join(opusAppPath, opusUiConfigFileName);
-
-	if (!opusAppPackageValue.opusUiConfig || !isObjectLiteral(opusAppPackageValue.opusUiConfig))
-		return defaultPath;
-
-	const opusUiConfig = opusAppPackageValue.opusUiConfig as { externalOpusUiConfig?: JSONValue };
-
-	let externalOpusUiConfig = opusUiConfig.externalOpusUiConfig;
-
-	if (!externalOpusUiConfig || typeof externalOpusUiConfig !== 'string')
-		return defaultPath;
-
-	externalOpusUiConfig = externalOpusUiConfig as string;
-
-	if (externalOpusUiConfig.includes('\\') || externalOpusUiConfig.includes('/'))
-		externalOpusUiConfig = getFixedPathForOS(externalOpusUiConfig);
-	else
-		externalOpusUiConfig = getFixedPathForOS(path.join(opusAppPath, externalOpusUiConfig));
-
-	return externalOpusUiConfig;
 };
 
 // Implementation
