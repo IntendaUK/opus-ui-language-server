@@ -27,6 +27,7 @@ export type LanguageServerPaths = {
 	opusLibraryPaths: OpusLibraryPaths,
 	opusEnsemblePaths: OpusEnsemblePaths,
 	opusComponentPropSpecPaths: OpusComponentPropSpecPaths,
+	externalOpusUiConfigPath: string,
 	opusAppMdaPath: string
 }
 

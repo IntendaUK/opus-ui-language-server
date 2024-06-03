@@ -48,6 +48,15 @@ const setPackageJsonNodeInNodesMap = async (caches: typeof ServerManager.caches)
 	setFileNodesInNodesMap(caches.nodes, ServerManager.paths.opusAppPath, ServerManager.paths.opusAppPackagePath, fileString);
 };
 
+const setOpusUiConfigNodeInNodesMap = async (caches: typeof ServerManager.caches) => {
+	const fileString = await fetchFile(ServerManager.paths.externalOpusUiConfigPath, false);
+
+	if (!fileString)
+		return;
+
+	setFileNodesInNodesMap(caches.nodes, ServerManager.paths.opusAppPath, ServerManager.paths.externalOpusUiConfigPath, fileString);
+};
+
 const setDataFromOpus = async (caches: typeof ServerManager.caches) => {
 	const basePropSpecs: null | ComponentPropSpecs = await buildOpusPropSpecs('baseProps');
 	if (basePropSpecs)
@@ -73,6 +82,7 @@ const buildCaches = async (caches: typeof ServerManager.caches) => {
 	const ensembleNodesMap: null | Nodes = await buildEnsemblesNodesMap(caches);
 
 	await setPackageJsonNodeInNodesMap(caches);
+	await setOpusUiConfigNodeInNodesMap(caches);
 
 	caches.traitDefinitionsMap = buildTraitDefinitionsMap(caches.nodes);
 

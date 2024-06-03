@@ -24,6 +24,13 @@ const setBaseTypes = (node: Node, nodes: Nodes) => {
 	if (ancestorHasType(node, nodes, NODE_TYPES.APP_PACKAGE_FILE))
 		result.push(NODE_TYPES.APP_PACKAGE_FILE_ENTRY);
 
+	// OPUS_UI_CONFIG_FILE
+	if (node.path === ServerManager.paths.externalOpusUiConfigPath)
+		result.push(NODE_TYPES.OPUS_UI_CONFIG_FILE);
+
+	if (ancestorHasType(node, nodes, NODE_TYPES.OPUS_UI_CONFIG_FILE))
+		result.push(NODE_TYPES.OPUS_UI_CONFIG_FILE_ENTRY);
+
 	// SERVE_PACKAGE_FILE
 	if (node.path === `${ServerManager.paths.opusAppMdaPath}/serve.json`)
 		result.push(NODE_TYPES.APP_SERVE_MDA_FILE);

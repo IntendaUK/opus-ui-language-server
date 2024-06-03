@@ -6,3 +6,10 @@ export const opusUiEngineDependencyFolderPath = '@intenda'; // This is relative 
 export const opusUiEngineDependencyName = 'opus-ui';
 export const opusUiLspConfigFileName = 'lspconfig.json';
 export const opusUiComponentConfigFileName = 'system.json';
+export const opusUiConfigFileName = '.opusUiConfig';
+export const opusUiConfigKeys = [
+	'opusPackagerConfig',
+	'opusUiComponentLibraries',
+	'opusUiEnsembles'
+];
+

@@ -10,11 +10,13 @@ const fileIsOutsideScope = (fileUri: string): boolean => {
 
 	if (!ServerManager.paths) 
 		return true;
-	
+
 	const isInsideScope = (
 		(absolutePath.startsWith(ServerManager.paths.opusAppPackagePath))
 		||
 		(absolutePath.startsWith(ServerManager.paths.opusAppMdaPath))
+		||
+		(absolutePath.startsWith(ServerManager.paths.externalOpusUiConfigPath))
 		||
 		(Array.from(ServerManager.paths.opusEnsemblePaths.values()).some(ensemblePath => absolutePath.startsWith(ensemblePath)))
 	);

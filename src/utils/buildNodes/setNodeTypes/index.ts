@@ -24,7 +24,12 @@ const setTypes = (node: Node, nodes: Nodes) => {
 
 	buildBase(node, nodes);
 
-	if (ancestorHasType(node, nodes, NODE_TYPES.APP_PACKAGE_FILE) || ancestorHasType(node, nodes, NODE_TYPES.APP_SERVE_MDA_FILE) || ancestorHasType(node, nodes, NODE_TYPES.APP_DATA_FOLDER))
+	if (
+		ancestorHasType(node, nodes, NODE_TYPES.APP_PACKAGE_FILE) ||
+		ancestorHasType(node, nodes, NODE_TYPES.APP_SERVE_MDA_FILE) ||
+		ancestorHasType(node, nodes, NODE_TYPES.OPUS_UI_CONFIG_FILE) ||
+		ancestorHasType(node, nodes, NODE_TYPES.APP_DATA_FOLDER)
+	)
 		return;
 
 	const parentNode: null | Node = getNodeParent(node, nodes);

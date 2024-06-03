@@ -143,13 +143,15 @@ export const handlerOnFileOpened = async (fileUri: string, fileContentString: st
 
 export const handlerOnPackageJsonFileModified = async (fileUri: string, fileContentString: string) => {
 	const fileNodePath = getAbsolutePathFromUri(fileUri);
-	const prevPackageFile = ServerManager.caches.nodes.get(fileNodePath);
-	const modifiedNodes = await buildNodesForModifiedFileAndSendDiagnostics(fileUri, fileContentString);
-	const newPackageFile = modifiedNodes.nodesBuilt.find(n => n.path === fileNodePath);
+	const prevPackageNode = ServerManager.caches.nodes.get(fileNodePath);
+	const previousPackageNodeValue = prevPackageNode && JSON.parse(JSON.stringify(prevPackageNode.value));
 
-	if (prevPackageFile?.value && newPackageFile?.value) {
-		const { opusUiComponentLibraries: prevOpusComponentLibraries, opusUiEnsembles: prevOpusUiEnsembles, dependencies: prevDependencies } = prevPackageFile.value as JSONObject;
-		const { opusUiComponentLibraries: newOpusComponentLibraries, opusUiEnsembles: newOpusUiEnsembles, dependencies: newDependencies } = newPackageFile.value as JSONObject;
+	const modifiedNodes = await buildNodesForModifiedFileAndSendDiagnostics(fileUri, fileContentString);
+	const newPackageNode = modifiedNodes.nodesBuilt.find(n => n.path === fileNodePath);
+
+	if (previousPackageNodeValue && newPackageNode?.value) {
+		const { opusUiComponentLibraries: prevOpusComponentLibraries, opusUiEnsembles: prevOpusUiEnsembles, dependencies: prevDependencies, opusUiConfig: prevOpusUiConfig } = previousPackageNodeValue as JSONObject;
+		const { opusUiComponentLibraries: newOpusComponentLibraries, opusUiEnsembles: newOpusUiEnsembles, dependencies: newDependencies, opusUiConfig: newOpusUiConfig } = newPackageNode.value as JSONObject;
 
 		if (
 			(JSON.stringify(newOpusComponentLibraries) !== JSON.stringify(prevOpusComponentLibraries))
@@ -157,9 +159,25 @@ export const handlerOnPackageJsonFileModified = async (fileUri: string, fileCont
 			(JSON.stringify(prevOpusUiEnsembles) !== JSON.stringify(newOpusUiEnsembles))
 			||
 			(JSON.stringify(prevDependencies) !== JSON.stringify(newDependencies))
+			||
+			(JSON.stringify(prevOpusUiConfig) !== JSON.stringify(newOpusUiConfig))
 		)
 			await switchToOpusUiAppAndReloadCachesIfRequired(fileUri);
 	}
+};
+
+export const handlerOnOpusUiConfigFileModified = async (fileUri: string, fileContentString: string) => {
+	const fileNodePath = getAbsolutePathFromUri(fileUri);
+	const previousOpusUiConfigNode = ServerManager.caches.nodes.get(fileNodePath);
+
+	const previousOpusUiConfigNodeValue = previousOpusUiConfigNode && JSON.parse(JSON.stringify(previousOpusUiConfigNode.value));
+
+	const modifiedNodes = await buildNodesForModifiedFileAndSendDiagnostics(fileUri, fileContentString);
+	const newOpusUiConfigNode = modifiedNodes.nodesBuilt.find(n => n.path === fileNodePath);
+
+	if (previousOpusUiConfigNodeValue && newOpusUiConfigNode?.value)
+		await switchToOpusUiAppAndReloadCachesIfRequired(fileUri);
+
 };
 
 export const handlerOnFileModified = async (fileUri: string, fileContentString: string) => {

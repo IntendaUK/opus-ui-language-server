@@ -2,7 +2,13 @@
 import path from 'path';
 
 // Config
-import { opusUiEngineDependencyFolderPath, opusUiEngineDependencyName, opusUiLspConfigFileName } from '../../../config';
+import {
+	opusUiConfigFileName,
+	opusUiConfigKeys,
+	opusUiEngineDependencyFolderPath,
+	opusUiEngineDependencyName,
+	opusUiLspConfigFileName
+} from '../../../config';
 
 // Internals
 import { SERVER_INIT_PARAMS } from '../../../managers/serverManager/events/onInitialize';
@@ -25,7 +31,61 @@ import { checkIfFolderExists } from '../../fileFolderUtils';
 import fetchFile from '../../fetchFile';
 import getFixedPathForOS from '../../getFixedPathForOS';
 
+// Managers
+import ServerManager from '../../../managers/serverManager';
+
 // Local Helpers
+const getOpusUiConfigFile = async (externalOpusUiConfigPath: string): Promise<JSONObject | null> => {
+	let externalOpusUiConfigData = null;
+
+	try {
+		const matchedModifiedOpusUiConfigFile = Array.from(ServerManager.documents.entries()).find(([p]) => getAbsolutePathFromUri(p) === externalOpusUiConfigPath);
+
+		if (matchedModifiedOpusUiConfigFile)
+			externalOpusUiConfigData = JSON.parse(matchedModifiedOpusUiConfigFile[1]);
+		else {
+			const fetchedExternalOpusUiConfig = await fetchFile(externalOpusUiConfigPath);
+
+			if (!fetchedExternalOpusUiConfig)
+				throw new Error();
+
+			externalOpusUiConfigData = JSON.parse(fetchedExternalOpusUiConfig);
+		}
+	} catch (e) {}
+
+	if (!isObjectLiteral(externalOpusUiConfigData))
+		return null;
+
+	return externalOpusUiConfigData as JSONObject;
+};
+
+const buildOpusUiConfig = async (externalOpusUiConfigPath: string, opusAppPackageValue: JSONObject) => {
+	const opusUiConfig: JSONObject = {};
+
+	// Start with opusUiConfig entries from package.json
+	opusUiConfigKeys.forEach(k => {
+		if (opusAppPackageValue[k]) opusUiConfig[k] = opusAppPackageValue[k];
+	});
+
+	if (opusAppPackageValue.opusUiConfig && isObjectLiteral(opusAppPackageValue.opusUiConfig)) {
+		// Override opusUiConfig entries with those from opusUiConfig object in package.json
+		opusUiConfigKeys.forEach(k => {
+			if ((opusAppPackageValue.opusUiConfig as JSONObject)[k]) opusUiConfig[k] = (opusAppPackageValue.opusUiConfig as JSONObject)[k];
+		});
+	}
+
+	const externalOpusUiConfigData = await getOpusUiConfigFile(externalOpusUiConfigPath);
+
+	if (externalOpusUiConfigData) {
+		// Override opusUiConfig entries with those from external opusUiConfig file.
+		opusUiConfigKeys.forEach(k => {
+			if ((externalOpusUiConfigData as JSONObject)[k]) opusUiConfig[k] = (externalOpusUiConfigData as JSONObject)[k];
+		});
+	}
+
+	return opusUiConfig;
+};
+
 const buildPropSpecPathsForPath = async (p: string): Promise<null | OpusComponentPropSpecPaths> => {
 	try {
 		const propSpecPaths: OpusComponentPropSpecPaths = {};
@@ -93,18 +153,18 @@ const getOpusAppDirectory = (opusPackagerConfig: JSONValue): string | null => {
 	return appDir;
 };
 
-const buildOpusLibraryPaths = (opusAppPath: string, opusAppPackageValue: JSONObject): OpusLibraryPaths => {
+const buildOpusLibraryPaths = (opusAppPath: string, opusUiComponentLibraries: JSONValue, dependencies: JSONValue): OpusLibraryPaths => {
 	const opusLibraryPaths: OpusLibraryPaths = new Map();
 
-	if (opusAppPackageValue.opusUiComponentLibraries && isArray(opusAppPackageValue.opusUiComponentLibraries)) {
-		(opusAppPackageValue.opusUiComponentLibraries as JSONArray).forEach(k => {
+	if (opusUiComponentLibraries && isArray(opusUiComponentLibraries)) {
+		(opusUiComponentLibraries as JSONArray).forEach(k => {
 			if (
 				!k ||
 				typeof k !== 'string' ||
 				k === getFixedPathForOS(path.join(opusUiEngineDependencyFolderPath, opusUiEngineDependencyName)) ||
-				!opusAppPackageValue.dependencies ||
-				!isObjectLiteral(opusAppPackageValue.dependencies) ||
-				!(opusAppPackageValue.dependencies as JSONObject)[k]
+				!dependencies ||
+				!isObjectLiteral(dependencies) ||
+				!(dependencies as JSONObject)[k]
 			)
 				return;
 
@@ -118,8 +178,8 @@ const buildOpusLibraryPaths = (opusAppPath: string, opusAppPackageValue: JSONObj
 	return opusLibraryPaths;
 };
 
-const buildInternalEnsembleConfig = (internalPathVar: string, opusAppPath: string, opusAppPackageValue: JSONObject): null | { ensembleName: string, ensemblePath: string } => {
-	if (!opusAppPackageValue.dependencies || !isObjectLiteral(opusAppPackageValue.dependencies) || !(opusAppPackageValue.dependencies as JSONObject)[internalPathVar])
+const buildInternalEnsembleConfig = (internalPathVar: string, opusAppPath: string, dependencies: JSONValue): null | { ensembleName: string, ensemblePath: string } => {
+	if (!dependencies || !isObjectLiteral(dependencies) || !(dependencies as JSONObject)[internalPathVar])
 		return null;
 
 	const ensemblePath = getFixedPathForOS(path.join(opusAppPath, 'node_modules', internalPathVar));
@@ -141,11 +201,11 @@ const buildExternalEnsembleConfig = (externalPathVar: string): { ensembleName: s
 	};
 };
 
-const buildOpusEnsemblePaths = (opusAppPath: string, opusAppPackageValue: JSONObject): OpusEnsemblePaths => {
+const buildOpusEnsemblePaths = (opusAppPath: string, opusUiEnsembles: JSONValue, dependencies: JSONValue): OpusEnsemblePaths => {
 	const opusEnsemblePaths: OpusEnsemblePaths = new Map();
 
-	if (opusAppPackageValue.opusUiEnsembles && isArray(opusAppPackageValue.opusUiEnsembles)) {
-		(opusAppPackageValue.opusUiEnsembles as JSONArray).forEach(v => {
+	if (opusUiEnsembles && isArray(opusUiEnsembles)) {
+		(opusUiEnsembles as JSONArray).forEach(v => {
 			if (!v || !(typeof v === 'string' || isObjectLiteral(v)))
 				return;
 
@@ -153,7 +213,7 @@ const buildOpusEnsemblePaths = (opusAppPath: string, opusAppPackageValue: JSONOb
 			let ensembleName;
 
 			if (typeof v === 'string') {
-				const res = buildInternalEnsembleConfig(v, opusAppPath, opusAppPackageValue);
+				const res = buildInternalEnsembleConfig(v, opusAppPath, dependencies);
 				if (!res)
 					return;
 
@@ -171,7 +231,7 @@ const buildOpusEnsemblePaths = (opusAppPath: string, opusAppPackageValue: JSONOb
 					ensemblePath = res.ensemblePath;
 					ensembleName = res.ensembleName;
 				} else {
-					const res = buildInternalEnsembleConfig(pathVar, opusAppPath, opusAppPackageValue);
+					const res = buildInternalEnsembleConfig(pathVar, opusAppPath, dependencies);
 					if (!res)
 						return;
 
@@ -189,23 +249,50 @@ const buildOpusEnsemblePaths = (opusAppPath: string, opusAppPackageValue: JSONOb
 	return opusEnsemblePaths;
 };
 
+const buildExternalOpusUiConfigPath = (opusAppPath: string, opusAppPackageValue: JSONObject): string => {
+	const defaultPath = path.join(opusAppPath, opusUiConfigFileName);
+
+	if (!opusAppPackageValue.opusUiConfig || !isObjectLiteral(opusAppPackageValue.opusUiConfig))
+		return defaultPath;
+
+	const opusUiConfig = opusAppPackageValue.opusUiConfig as { externalOpusUiConfig?: JSONValue };
+
+	let externalOpusUiConfig = opusUiConfig.externalOpusUiConfig;
+
+	if (!externalOpusUiConfig || typeof externalOpusUiConfig !== 'string')
+		return defaultPath;
+
+	externalOpusUiConfig = externalOpusUiConfig as string;
+
+	if (externalOpusUiConfig.includes('\\') || externalOpusUiConfig.includes('/'))
+		externalOpusUiConfig = getFixedPathForOS(externalOpusUiConfig);
+	else
+		externalOpusUiConfig = getFixedPathForOS(path.join(opusAppPath, externalOpusUiConfig));
+
+	return externalOpusUiConfig;
+};
+
 // Implementation
 const buildAppPaths = async (opusAppPackagePath: string, opusAppPackageValue: JSONObject): Promise<null | LanguageServerPaths> => {
-	const opusPackagerConfig = opusAppPackageValue.opusPackagerConfig;
+	const workspacePath = getAbsolutePathFromUri(SERVER_INIT_PARAMS.rootUri!);
+	const opusAppPath = getFixedPathForOS(opusAppPackagePath.substring(0, opusAppPackagePath.lastIndexOf('/')));
+	const opusPath = getFixedPathForOS(path.join(opusAppPath, 'node_modules', opusUiEngineDependencyFolderPath, opusUiEngineDependencyName));
+	const externalOpusUiConfigPath = buildExternalOpusUiConfigPath(opusAppPath, opusAppPackageValue);
 
-	if (!isObjectLiteral(opusPackagerConfig))
+	const { opusPackagerConfig, opusUiComponentLibraries, opusUiEnsembles } = await buildOpusUiConfig(externalOpusUiConfigPath, opusAppPackageValue);
+	const { dependencies } = opusAppPackageValue;
+
+	if (!opusPackagerConfig || !isObjectLiteral(opusPackagerConfig))
 		return null;
 
 	const appDir = getOpusAppDirectory(opusPackagerConfig);
 	if (appDir === null)
 		return null;
 
-	const workspacePath = getAbsolutePathFromUri(SERVER_INIT_PARAMS.rootUri!);
-	const opusAppPath = getFixedPathForOS(opusAppPackagePath.substring(0, opusAppPackagePath.lastIndexOf('/')));
-	const opusPath = getFixedPathForOS(path.join(opusAppPath, 'node_modules', opusUiEngineDependencyFolderPath, opusUiEngineDependencyName));
 	const opusAppMdaPath = getFixedPathForOS(path.join(opusAppPath, ...appDir.split('/')));
-	const opusLibraryPaths = buildOpusLibraryPaths(opusAppPath, opusAppPackageValue);
-	const opusEnsemblePaths: OpusEnsemblePaths = buildOpusEnsemblePaths(opusAppPath, opusAppPackageValue);
+
+	const opusLibraryPaths = buildOpusLibraryPaths(opusAppPath, opusUiComponentLibraries, dependencies);
+	const opusEnsemblePaths: OpusEnsemblePaths = buildOpusEnsemblePaths(opusAppPath, opusUiEnsembles, dependencies);
 
 	const opusComponentPropSpecPaths = await buildComponentPropSpecPaths(opusPath, opusLibraryPaths);
 	if (!opusComponentPropSpecPaths)
@@ -218,6 +305,7 @@ const buildAppPaths = async (opusAppPackagePath: string, opusAppPackageValue: JS
 		opusPath,
 		opusLibraryPaths,
 		opusComponentPropSpecPaths,
+		externalOpusUiConfigPath,
 		opusAppMdaPath,
 		opusEnsemblePaths
 	};
