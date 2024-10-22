@@ -21,7 +21,7 @@ export const extraOperatorKeys: ScpEntryItemConfig[] = [
 
 // Implementation
 const buildOpusOperators = async (): Promise<null | OpusOperatorsMap> => {
-	const operatorsPath = `${ServerManager.paths.opusPath}/src/components/scriptRunner/config/configOperators.js`;
+	const operatorsPath = `${ServerManager.paths.opusPath}/dist/components/scriptRunner/config/configOperators.js`;
 
 	let operatorsString = await fetchFile(operatorsPath);
 	if (!operatorsString)

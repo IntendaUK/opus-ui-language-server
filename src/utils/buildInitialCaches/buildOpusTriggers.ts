@@ -21,7 +21,7 @@ export const extraTriggerKeys: ScpEntryItemConfig[] = [
 
 // Implementation
 const buildOpusTriggers = async (): Promise<null | OpusTriggersMap> => {
-	const triggersPath = `${ServerManager.paths.opusPath}/src/components/scriptRunner/config/configTriggers.js`;
+	const triggersPath = `${ServerManager.paths.opusPath}/dist/components/scriptRunner/config/configTriggers.js`;
 
 	let triggersString = await fetchFile(triggersPath);
 

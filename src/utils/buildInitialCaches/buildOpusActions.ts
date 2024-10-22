@@ -41,7 +41,7 @@ export const extraActionKeys: ScpEntryItemConfig[] = [
 
 // Implementation
 const buildOpusActions = async (opusOperatorsMap: null | OpusOperatorsMap): Promise<null | OpusActionsMap> => {
-	const actionsPath = `${ServerManager.paths.opusPath}/src/components/scriptRunner/config/configActions.js`;
+	const actionsPath = `${ServerManager.paths.opusPath}/dist/components/scriptRunner/config/configActions.js`;
 
 	let actionsString = await fetchFile(actionsPath);
 	if (!actionsString)
