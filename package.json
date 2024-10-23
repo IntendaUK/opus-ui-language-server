@@ -1,6 +1,6 @@
 {
 	"name": "opus-ui-language-server",
-	"version": "3.0.0",
+	"version": "3.1.0",
 	"description": "Opus UI Language Server",
 	"author": "Intenda",
 	"license": "MIT",
@@ -23,7 +23,7 @@
 	},
 	"scripts": {
 		"compile": "tsc",
-		"dev": "tsc -w",
+		"dev": "nodemon --watch src --ext ts --exec \"tsc && node --inspect=6009 out/server.js --stdio\"",
 		"lint": "eslint ./src --ext .ts,.tsx"
 	}
 }

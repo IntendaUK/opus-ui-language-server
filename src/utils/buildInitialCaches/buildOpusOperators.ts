@@ -6,6 +6,9 @@ import fetchFile from '../fetchFile';
 // Model
 import type { OpusOperatorsMap, ScpEntryConfig, ScpEntryItemConfig } from '../../model';
 
+// Config
+import { opusUiScriptConfigFolderPath } from '../../config';
+
 // Managers
 import ServerManager from '../../managers/serverManager';
 
@@ -21,7 +24,7 @@ export const extraOperatorKeys: ScpEntryItemConfig[] = [
 
 // Implementation
 const buildOpusOperators = async (): Promise<null | OpusOperatorsMap> => {
-	const operatorsPath = `${ServerManager.paths.opusPath}/dist/components/scriptRunner/config/configOperators.js`;
+	const operatorsPath = `${ServerManager.paths.opusPath}/${opusUiScriptConfigFolderPath}/configOperators.js`;
 
 	let operatorsString = await fetchFile(operatorsPath);
 	if (!operatorsString)

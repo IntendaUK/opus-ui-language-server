@@ -62,7 +62,7 @@ const componentTypes = (nodes: Nodes, node: Node, errors: NodeError[]) => {
 		if (!componentTypes.includes(componentNodeTypes[0])) {
 			errors.push({
 				errorType,
-				message: `Component type "${componentNodeTypes[0]}" could not be determined. Language server features will not be provided for this node. If this is a custom component registered with "registerComponentTypes", this warning can be ignored. Otherwise, ensure the associated opus-ui component library which includes this component type is added to dependencies and opusUiComponentLibraries inside package.json and is installed with "npm install".`,
+				message: `Component type "${componentNodeTypes[0]}" could not be determined. Language server features will not be provided for this node. If this is a custom component registered with "registerComponentTypes", this warning can be ignored. Otherwise, ensure the associated opus-ui component library which includes this component type is added to dependencies (or peerDependencies) and opusUiComponentLibraries inside package.json and is installed with "npm install".`,
 				erroredIn: 'VALUE',
 				errorSolution: 'UNKNOWN',
 				severity: 2,
@@ -81,7 +81,7 @@ const componentTypes = (nodes: Nodes, node: Node, errors: NodeError[]) => {
 	if (!componentTypes.includes(node.value)) {
 		errors.push({
 			errorType,
-			message: `Component type "${node.value}" could not be determined. Language server features will not be provided for this node. If this is a custom component registered with "registerComponentTypes", this warning can be ignored. Otherwise, ensure the associated opus-ui component library which includes this component type is added to dependencies and opusUiComponentLibraries inside package.json and is installed with "npm install".`,
+			message: `Component type "${node.value}" could not be determined. Language server features will not be provided for this node. If this is a custom component registered with "registerComponentTypes", this warning can be ignored. Otherwise, ensure the associated opus-ui component library which includes this component type is added to dependencies (or peerDependencies) and opusUiComponentLibraries inside package.json and is installed with "npm install".`,
 			erroredIn: 'VALUE',
 			errorSolution: 'UNKNOWN',
 			severity: 2,
@@ -100,7 +100,7 @@ const componentTypes = (nodes: Nodes, node: Node, errors: NodeError[]) => {
 	const newError: NodeError = match.distance < 0.75
 		? ({
 			errorType,
-			message: `Component type "${node.value}" could not be determined. Language server features will not be provided for this node. If this is a custom component registered with "registerComponentTypes", this warning can be ignored. Otherwise, ensure the associated opus-ui component library which includes this component type is added to dependencies and opusUiComponentLibraries inside package.json and is installed with "npm install".`,
+			message: `Component type "${node.value}" could not be determined. Language server features will not be provided for this node. If this is a custom component registered with "registerComponentTypes", this warning can be ignored. Otherwise, ensure the associated opus-ui component library which includes this component type is added to dependencies (or peerDependencies) and opusUiComponentLibraries inside package.json and is installed with "npm install".`,
 			erroredIn: 'VALUE',
 			errorSolution: match.value,
 			severity: 2,
@@ -108,7 +108,7 @@ const componentTypes = (nodes: Nodes, node: Node, errors: NodeError[]) => {
 		})
 		: ({
 			errorType,
-			message: `Component type "${node.value}" could not be determined. Did you mean "${match.value}"? Language server features will not be provided for this node. If this is a custom component registered with "registerComponentTypes", this warning can be ignored. Otherwise, ensure the associated opus-ui component library which includes this component type is added to dependencies and opusUiComponentLibraries inside package.json and is installed with "npm install".`,
+			message: `Component type "${node.value}" could not be determined. Did you mean "${match.value}"? Language server features will not be provided for this node. If this is a custom component registered with "registerComponentTypes", this warning can be ignored. Otherwise, ensure the associated opus-ui component library which includes this component type is added to dependencies (or peerDependencies) and opusUiComponentLibraries inside package.json and is installed with "npm install".`,
 			erroredIn: 'VALUE',
 			errorSolution: match.value,
 			severity: 1,

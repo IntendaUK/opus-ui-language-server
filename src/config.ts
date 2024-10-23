@@ -7,6 +7,8 @@ export const opusUiEngineDependencyName = 'opus-ui';
 export const opusUiLspConfigFileName = 'lspconfig.json';
 export const opusUiComponentConfigFileName = 'system.json';
 export const opusUiConfigFileName = '.opusUiConfig';
+export const opusUiScriptConfigFolderPath = 'dist/components/scriptRunner/config';
+
 export const opusUiConfigKeys = [
 	'opusPackagerConfig',
 	'opusUiComponentLibraries',
@@ -14,3 +16,10 @@ export const opusUiConfigKeys = [
 	'opusUiColorThemes'
 ];
 
+export const opusUiPackageKeysToRebuildWhenChanged = [
+	'opusUiComponentLibraries',
+	'opusUiEnsembles',
+	'dependencies',
+	'peerDependencies',
+	'opusUiConfig'
+];

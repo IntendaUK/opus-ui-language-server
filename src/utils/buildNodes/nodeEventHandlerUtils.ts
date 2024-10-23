@@ -24,6 +24,9 @@ import ServerManager from '../../managers/serverManager';
 // Config
 import { NODE_TYPES } from './setNodeTypes/config';
 
+// Internals
+import { opusUiPackageKeysToRebuildWhenChanged } from '../../config';
+
 // Local Helpers
 const buildAndSendJsonDiagnostics = async (fileUri: string, fileContentString: string): Promise<Diagnostic[]> => {
 	const jsonDiagnostics = await getJsonDiagnostics(fileUri, fileContentString);
@@ -150,19 +153,14 @@ export const handlerOnPackageJsonFileModified = async (fileUri: string, fileCont
 	const newPackageNode = modifiedNodes.nodesBuilt.find(n => n.path === fileNodePath);
 
 	if (previousPackageNodeValue && newPackageNode?.value) {
-		const { opusUiComponentLibraries: prevOpusComponentLibraries, opusUiEnsembles: prevOpusUiEnsembles, dependencies: prevDependencies, opusUiConfig: prevOpusUiConfig } = previousPackageNodeValue as JSONObject;
-		const { opusUiComponentLibraries: newOpusComponentLibraries, opusUiEnsembles: newOpusUiEnsembles, dependencies: newDependencies, opusUiConfig: newOpusUiConfig } = newPackageNode.value as JSONObject;
 
-		if (
-			(JSON.stringify(newOpusComponentLibraries) !== JSON.stringify(prevOpusComponentLibraries))
-			||
-			(JSON.stringify(prevOpusUiEnsembles) !== JSON.stringify(newOpusUiEnsembles))
-			||
-			(JSON.stringify(prevDependencies) !== JSON.stringify(newDependencies))
-			||
-			(JSON.stringify(prevOpusUiConfig) !== JSON.stringify(newOpusUiConfig))
-		)
+		const prevValues = previousPackageNodeValue as JSONObject;
+		const newValues = newPackageNode.value as JSONObject;
+
+		const hasDifferences = opusUiPackageKeysToRebuildWhenChanged.some(key => JSON.stringify(newValues[key]) !== JSON.stringify(prevValues[key]));
+		if (hasDifferences)
 			await switchToOpusUiAppAndReloadCachesIfRequired(fileUri);
+		
 	}
 };
 

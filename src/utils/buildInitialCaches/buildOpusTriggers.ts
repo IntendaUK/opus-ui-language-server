@@ -6,6 +6,9 @@ import fetchFile from '../fetchFile';
 // Model
 import type { ScpEntryConfig, OpusTriggersMap, ScpEntryItemConfig } from '../../model';
 
+// Config
+import { opusUiScriptConfigFolderPath } from '../../config';
+
 // Managers
 import ServerManager from '../../managers/serverManager';
 
@@ -21,7 +24,7 @@ export const extraTriggerKeys: ScpEntryItemConfig[] = [
 
 // Implementation
 const buildOpusTriggers = async (): Promise<null | OpusTriggersMap> => {
-	const triggersPath = `${ServerManager.paths.opusPath}/dist/components/scriptRunner/config/configTriggers.js`;
+	const triggersPath = `${ServerManager.paths.opusPath}/${opusUiScriptConfigFolderPath}/configTriggers.js`;
 
 	let triggersString = await fetchFile(triggersPath);
 
