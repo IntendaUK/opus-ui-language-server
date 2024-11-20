@@ -17,7 +17,7 @@ import ServerManager from '../../managers/serverManager';
 // Local Internals
 const ignoreFolderDirents = {
 	mdaRoot: ['.git', 'node_modules', 'fonts', 'packaged', 'package-lock.json'],
-	mdaEnsembles: ['.git', 'package-lock.json']
+	mdaEnsembles: ['.git', 'node_modules', 'package.json', 'package-lock.json']
 };
 
 // Internal Utils
